@@ -160,40 +160,17 @@ public:
 		Events::initRwEvent += [] {
 
 			if (_fpsLimit > 0) {
-			#if defined(GTASA)
 				WriteMemory<uint8_t>(0x53E94C, 0, true); //removes 14 ms frame delay
 				WriteMemory<uint8_t>(0x619626, _fpsLimit, true);
 				WriteMemory<uint8_t>(0xC1704C, _fpsLimit, false);
-			#endif
-			#if defined(GTAVC)
-				WriteMemory<uint8_t>(0x602D68, _fpsLimit, true);
-				WriteMemory<uint8_t>(0x9B48EC, _fpsLimit, false);
-			#endif
-			#if defined(GTA3)
-				WriteMemory<uint8_t>(0x584C78, _fpsLimit, true);
-				WriteMemory<uint8_t>(0x8F4374, _fpsLimit, false);
-			#endif
 			}
 
 			if (_refreshRate > 0 && _refreshRate != 60) {
-			#if defined(GTASA)
 				WriteMemory<uint8_t>(0x74612A + 2, _refreshRate); //min hz
 				//patch::RedirectCall(0x74631E, PatchedSetRefreshRate);
 				//RwD3D9EngineSetRefreshRate(_refreshRate);
-			#endif
-			#if defined(GTAVC)
-				//WriteMemory<uint8_t>(0x60105B + 2, _refreshRate); //min hz
-				//patch::RedirectCall(0x600F66, PatchedSetRefreshRate);
-				RwD3D8EngineSetRefreshRate(_refreshRate);
-			#endif
-			#if defined(GTA3)
-				//WriteMemory<uint8_t>(0x581D55 + 2, _refreshRate); //min hz
-				//patch::RedirectCall(0x581F46, PatchedSetRefreshRate);
-				RwD3D8EngineSetRefreshRate(_refreshRate);
-			#endif
 			}
 
-		#if defined(GTASA)
 
 			// Swing Door (mainly CDoor::Process) fixes
 			MakeJMP(0x6F4422, asm_SwingCompAdd, true);
@@ -275,22 +252,10 @@ public:
 				}
 			}; MakeInline<SkimmerResistanceFix>(0x6D2771, 0x6D2771 + 6);
 
-		#endif // defined(GTASA)
 
 
-		#if defined(GTAVC)
-			struct SkimmerResistanceFixVC
-			{
-				void operator()(reg_pack& regs)
-				{
-					float f = 30.0f * (CTimer::ms_fTimeStep / magic);
-					asm_fld(f);
-				}
-			}; MakeInline<SkimmerResistanceFixVC>(0x59FB69, 0x59FB69 + 6);
-		#endif defined(GTAVC)
 
 
-		#if defined(GTASA)
 			struct CarWheelOnRailsSpinFix1
 			{
 				void operator()(reg_pack& regs)
@@ -327,21 +292,13 @@ public:
 				}
 			}; MakeInline<CarWheelOnRailsSpinFix4>(0x6B5269, 0x6B5269 + 6);
 
-		#endif // defined(GTASA)
 
 
 			// CarWheelOnRailsSpinFix III VC
-		#if defined(GTA3)
-			MakeInline<MagicTimeStepFMUL>(0x5512D2, 0x5512D2 + 6);
-		#endif defined(GTA3)
 
-		#if defined(GTAVC)
-			MakeInline<MagicTimeStepFMUL>(0x5BA952, 0x5BA952 + 6);
-		#endif defined(GTAVC)
 
 
 			// Burnout
-		#if defined(GTASA)
 			struct BurnoutFix
 			{
 				void operator()(reg_pack& regs)
@@ -351,7 +308,6 @@ public:
 				}
 			};
 			MakeInline<BurnoutFix>(0x6A4FE6, 0x6A4FE6 + 6);
-		#endif defined(GTASA)
 
 			struct CarSlowDownSpeedFix
 			{
@@ -372,29 +328,13 @@ public:
 			};
 
 
-		#if defined(GTASA)
 			MakeInline<CarSlowDownSpeedFix>(0x6D6E69, 0x6D6E69 + 6);
 			MakeInline<CarSlowDownSpeedFix>(0x6D6EA8, 0x6D6EA8 + 6);
 			MakeInline<CarSlowDownSpeedFix>(0x6D767F, 0x6D767F + 6);
 			MakeInline<CarSlowDownSpeedFix>(0x6D76AB, 0x6D76AB + 6);
 			MakeInline<CarSlowDownSpeedFix>(0x6D76CD, 0x6D76CD + 6);
-		#endif
 
-		#if defined(GTAVC)
-			MakeInline<CarSlowDownSpeedFixMul>(0x5BA392, 0x5BA392 + 6);
-			MakeInline<CarSlowDownSpeedFixMul>(0x5BA3C3, 0x5BA3C3 + 6);
-			MakeInline<CarSlowDownSpeedFixMul>(0x5BA3E5, 0x5BA3E5 + 6);
-			MakeInline<CarSlowDownSpeedFix>(0x5BA3F0, 0x5BA3F0 + 6);
-			MakeInline<CarSlowDownSpeedFixMul>(0x5B9AD2, 0x5B9AD2 + 6);
-			MakeInline<CarSlowDownSpeedFixMul>(0x5B9B03, 0x5B9B03 + 6);
-			MakeInline<CarSlowDownSpeedFixMul>(0x5B9B25, 0x5B9B25 + 6);
-			MakeInline<CarSlowDownSpeedFix>(0x5B9B30, 0x5B9B30 + 6);
-		#endif
 
-		#if defined(GTA3)
-			MakeInline<CarSlowDownSpeedFixMul>(0x5515ED, 0x5515ED + 6);
-			MakeInline<CarSlowDownSpeedFix>(0x551600, 0x551600 + 6);
-		#endif
 
 
 			static unsigned int hornPressLastTime = 0;
@@ -408,12 +348,8 @@ public:
 					CPad* pad;
 					CVehicle* vehicle = (CVehicle*)regs.esi;
 
-				#if defined(GTASA)
 					// Bonus: fix second player unable to toggle siren
 					pad = vehicle->m_pDriver == CWorld::Players[0].m_pPed ? CPad::GetPad(0) : CPad::GetPad(1);
-				#else
-					pad = CPad::GetPad(0);
-				#endif
 
 					// Store horn state
 					if (pad->HornJustDown()) {
@@ -427,57 +363,24 @@ public:
 					uint32_t returnAddress;
 					if (pad->GetHorn() && CTimer::m_snTimeInMilliseconds - hornPressLastTime >= 150) {
 						// horn return
-					#if defined(GTASA)
 						returnAddress = 0x6E09E8;
-					#endif
-					#if defined(GTAVC)
-						returnAddress = 0x597B39;
-					#endif
-					#if defined(GTA3)
-						returnAddress = 0x534169;
-					#endif
 					}
 					else if (hornJustUp && CTimer::m_snTimeInMilliseconds - hornPressLastTime < 150) {
 						hornJustUp = false;
 						hornHasPressed = false;
 						// toggle siren return
-					#if defined(GTASA)
 						returnAddress = 0x6E0999;
-					#endif
-					#if defined(GTAVC)
-						returnAddress = 0x597AB5;
-					#endif
-					#if defined(GTA3)
-						returnAddress = 0x5340EB;
-					#endif
 					}
 					else {
 						// no horn return
-					#if defined(GTASA)
 						returnAddress = 0x6E09F7;
-					#endif
-					#if defined(GTAVC)
-						returnAddress = 0x597AE0;
-					#endif
-					#if defined(GTA3)
-						returnAddress = 0x534113;
-					#endif
 					}
 					*(uint32_t*)(regs.esp - 0x4) = returnAddress;
 				}
 			};
-		#if defined(GTASA)
 			MakeInline<SirenTurnOnFix>(0x006E0961);
-		#endif
-		#if defined(GTAVC)
-			MakeInline<SirenTurnOnFix>(0x00597A58);
-		#endif
-		#if defined(GTA3)
-			MakeInline<SirenTurnOnFix>(0x00534092);
-		#endif
 
 
-		#if defined(GTASA)
 			struct HeliRotorIncreaseSpeedA
 			{
 				void operator()(reg_pack& regs)
@@ -498,32 +401,9 @@ public:
 					asm_fadd(f);
 				}
 			}; MakeInline<HeliRotorIncreaseSpeedB>(0x6C4F29, 0x6C4F29 + 6);
-		#endif
 
 
-		#if defined(GTAVC)
-			struct HeliRotorIncreaseSpeedVCAdd
-			{
-				void operator()(reg_pack& regs)
-				{
-					float* rotorFinalSpeed = ReadMemory<float*>(0x005AF238 + 2, true); // MixSets adaptation
-					float f = (*rotorFinalSpeed / 13.0f) * (CTimer::ms_fTimeStep / magic);
-					asm_fadd(f);
-				}
-			}; MakeInline<HeliRotorIncreaseSpeedVCAdd>(0x5AF226, 0x5AF226 + 6);
 
-			struct HeliRotorIncreaseSpeedVCSub
-			{
-				void operator()(reg_pack& regs)
-				{
-					float* rotorFinalSpeed = ReadMemory<float*>(0x005AF238 + 2, true); // MixSets adaptation
-					float f = *rotorFinalSpeed * (CTimer::ms_fTimeStep / magic);
-					asm_fsub(f);
-				}
-			}; MakeInline<HeliRotorIncreaseSpeedVCSub>(0x5AF24B, 0x5AF24B + 6);
-		#endif 
-
-		#if defined(GTASA)
 			struct PedPushCarForce
 			{
 				void operator()(reg_pack& regs)
@@ -535,9 +415,7 @@ public:
 					regs.eax = *(uint32_t*)(regs.esp + 0xB0 - 0x90 + 0x4); //mov     eax, [esp+0B0h+out_result.y]
 				}
 			}; MakeInline<PedPushCarForce>(0x549652, 0x549652 + 8);
-		#endif
 
-		#if defined(GTASA)
 			if (autoLimitFPS.flagsInt != 0) {
 				Events::processScriptsEvent += []() {
 
@@ -625,7 +503,6 @@ public:
 					};
 				}
 			}
-		#endif
 
 		}; //end of init
 
