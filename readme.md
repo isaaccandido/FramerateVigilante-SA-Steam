@@ -5,7 +5,7 @@ Play the **Steam / Rockstar Launcher** version of GTA San Andreas at 60 FPS with
 This is a port of **[Framerate Vigilante](https://github.com/GTAmodding/FramerateVigilante)** by [Junior_Djjr](https://github.com/JuniorDjjr) (MixMods). The original only supports the 1.0 US executable, and on the Steam build it can break save loading. All the fixes and their logic come from the original; this project re-targets them to the Steam executable. The original source is kept unchanged in [`original/`](original/) for reference.
 
 ## Download
-Get `FramerateVigilanteSteam.asi` and `FramerateVigilanteSteam.ini` from the [Releases page](https://github.com/isaaccandido/FramerateVigilante-SA-Steam/releases).
+Download `FramerateVigilanteSteam-vX.Y.Z.zip` from the [Releases page](https://github.com/isaaccandido/FramerateVigilante-SA-Steam/releases). It contains the `.asi`, the `.ini` and install notes.
 
 ## Compatibility
 - **Supported:** `gta-sa.exe` from Steam / Rockstar Launcher (tested build md5 `5bfd4dd83989a8264de4b8e771f237fd`).
@@ -42,7 +42,7 @@ build.cmd
 ```
 This produces `build\FramerateVigilanteSteam.asi`.
 
-GitHub Actions builds the same binary on every push. Pushing a `v*` tag (e.g. `git tag v1.0.1 && git push origin v1.0.1`) publishes a release with the `.asi` and `.ini` attached.
+GitHub Actions builds the same binary on every push. To release, set `VERSION_TAG` in `src/main.c`, commit, then push a matching tag (e.g. `git tag v1.0.2 && git push origin v1.0.2`). The workflow checks that the tag matches `VERSION_TAG`, then publishes a release with the zip attached.
 
 ## Testing
 The harness compiles the same `src/main.c` for 32-bit Linux, loads a relocated copy of your Steam executable, applies every patch, then executes each generated stub natively and checks the results (88 checks at 30 and 60 FPS timesteps). Game files are not included; generate the image from your own copy:

@@ -1,0 +1,14 @@
+Framerate Vigilante SA Steam
+https://github.com/isaaccandido/FramerateVigilante-SA-Steam
+
+For the Steam / Rockstar Launcher version of GTA San Andreas (gta-sa.exe).
+Not for 1.0 US (gta_sa.exe) or the Definitive Edition.
+
+Install
+1. Install an ASI loader (SilentPatch already includes one).
+2. Copy FramerateVigilanteSteam.asi and FramerateVigilanteSteam.ini into the game folder.
+3. Keep the in-game Frame Limiter ON. Set the cap with FPSlimit in the .ini (default 60).
+
+After launching, FramerateVigilanteSteam.log in the game folder lists every fix as OK or SKIPPED.
+
+Based on Framerate Vigilante by Junior_Djjr: https://github.com/GTAmodding/FramerateVigilante

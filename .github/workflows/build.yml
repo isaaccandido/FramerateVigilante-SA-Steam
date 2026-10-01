@@ -32,17 +32,30 @@ jobs:
       - name: Compile test harness
         run: python -m ziglang cc -target x86-linux-musl -static -O1 -Wall -Werror -Itest/shim -o build/harness test/harness.c
 
+      - name: Read version
+        run: echo "VERSION=$(sed -n 's/^#define VERSION_TAG "\(.*\)"/\1/p' src/main.c)" >> "$GITHUB_ENV"
+
+      - name: Check tag matches VERSION_TAG
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          if [ "$GITHUB_REF_NAME" != "v$VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match VERSION_TAG $VERSION in src/main.c"
+            exit 1
+          fi
+
+      - name: Package
+        run: |
+          mkdir -p dist/pkg
+          cp build/FramerateVigilanteSteam.asi FramerateVigilanteSteam.ini package/INSTALL.txt dist/pkg/
+          (cd dist/pkg && zip -q "../FramerateVigilanteSteam-v$VERSION.zip" *)
+
       - uses: actions/upload-artifact@v4
         with:
-          name: FramerateVigilanteSteam
-          path: |
-            build/FramerateVigilanteSteam.asi
-            FramerateVigilanteSteam.ini
+          name: FramerateVigilanteSteam-v${{ env.VERSION }}
+          path: dist/FramerateVigilanteSteam-v${{ env.VERSION }}.zip
 
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            build/FramerateVigilanteSteam.asi
-            FramerateVigilanteSteam.ini
+          files: dist/FramerateVigilanteSteam-v${{ env.VERSION }}.zip

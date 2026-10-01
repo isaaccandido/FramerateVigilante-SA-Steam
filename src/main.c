@@ -9,7 +9,7 @@
 #include <string.h>
 
 #define PREFERRED_BASE 0x400000u
-#define VERSION_TAG "1.0.0"
+#define VERSION_TAG "1.0.1"
 
 static uintptr_t g_base;
 static FILE *g_log;

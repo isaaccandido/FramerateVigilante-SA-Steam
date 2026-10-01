@@ -352,3 +352,4 @@ gta-sa.exe
 gta_sa.exe
 *.log
 .idea/
+dist/
