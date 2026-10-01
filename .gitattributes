@@ -51,3 +51,8 @@
 #*.props     merge=binary
 #*.filters   merge=binary
 #*.vcxitems  merge=binary
+
+# Steam port
+*.sh   text eol=lf
+*.cmd  text eol=crlf
+*.yml  text eol=lf

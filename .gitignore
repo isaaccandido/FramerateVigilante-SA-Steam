@@ -343,3 +343,12 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
+
+# Steam port: build output and game-derived files
+build/
+*.asi
+*.bin
+gta-sa.exe
+gta_sa.exe
+*.log
+.idea/
